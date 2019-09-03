@@ -2,6 +2,7 @@ import React from "react";
 import TodoList from "./components/TodoComponents/TodoList";
 
 import TodoForm from "./components/TodoComponents/TodoForm";
+import Header from "./components/TodoComponents/Header";
 
 class App extends React.Component {
   // you will need a place to store your state in this component.
@@ -14,23 +15,6 @@ class App extends React.Component {
       todos: []
     };
   }
-  render() {
-    return (
-      <div>
-        <TodoForm addTodo={this.addTodo} />
-        <button onClick={() => this.clearCompleted()}>Clear List</button>
-        <TodoList updateTodo={this.updateTodo} todos={this.state.todos} />
-      </div>
-    );
-  }
-
-  clearCompleted = () => {
-    const newList = this.state.todos.filter(item => {
-      return item.completed === false;
-    });
-
-    this.setState({ todos: newList });
-  };
 
   componentDidMount = () => {
     const todos = localStorage.getItem("todos");
@@ -40,6 +24,16 @@ class App extends React.Component {
     } else {
       console.log("No todos");
     }
+  };
+
+  clearCompleted = async () => {
+    const newList = this.state.todos.filter(item => {
+      return item.completed === false;
+    });
+
+    await this.setState({ todos: newList });
+    localStorage.clear();
+    localStorage.setItem("todos", JSON.stringify(this.state.todos));
   };
 
   addTodo = async todo => {
@@ -66,6 +60,17 @@ class App extends React.Component {
     });
     this.setState({ todos: newTodos });
   };
+
+  render() {
+    return (
+      <div className="todo-card-container">
+        <Header />
+        <TodoForm addTodo={this.addTodo} />
+        <button onClick={() => this.clearCompleted()}>Clear List</button>
+        <TodoList updateTodo={this.updateTodo} todos={this.state.todos} />
+      </div>
+    );
+  }
 }
 
 export default App;
